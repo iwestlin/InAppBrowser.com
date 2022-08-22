@@ -240,7 +240,16 @@
         }
         try {
             const original = node[prop]
-            node[prop] = function() {
+            Object.defineProperty(node, prop, {
+                get () { return fake },
+                set (fn) {
+                    appendEvent(`${node.constructor.name}.${prop}`, level)
+                    fake = fn
+                },
+                writeable: true,
+                configurable: true
+            })
+            function fake () {
                 let str = prop;
                 if (arguments) {
                     str = `${node.constructor.name}.${prop}(`
