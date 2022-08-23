@@ -246,8 +246,8 @@
                     appendEvent(`${node.constructor.name}.${prop}`, level)
                     fake = fn
                 },
-                writeable: true,
-                configurable: true
+                // writeable: true,
+                // configurable: true
             })
             function fake () {
                 let str = prop;
@@ -305,6 +305,14 @@
         }
     }
     investigate(document, 1);
+
+    window.addEventListener('error', e => {
+        console.log(e)
+        if (e.message?.includes('redefine property')) {
+            const str = e.message?.split(':')[2]
+            str && appendEvent(str)
+        }
+    })
 
     const originalAddEventListener = window.addEventListener;
     const originalRemoveEventListener = window.removeEventListener;
