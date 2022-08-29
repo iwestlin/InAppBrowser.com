@@ -236,14 +236,28 @@
 
     function overrideFunction(node, prop, level) {
         if (typeof node[prop] !== "function") {
-            return;
+            let originVal = node[prop]
+            Object.defineProperty(node, prop, {
+                get () {
+                    appendEvent(`getting ${node.constructor.name}.${prop}`, level)
+                    return originVal
+                },
+                set (newVal) {
+                    appendEvent(`setting ${node.constructor.name}.${prop}`, level)
+                    originVal = newVal
+                }
+            })
+            return
         }
         try {
             const original = node[prop]
             Object.defineProperty(node, prop, {
-                get () { return fake },
+                get () {
+                    appendEvent(`getting ${node.constructor.name}.${prop}`, level)
+                    return fake
+                },
                 set (fn) {
-                    appendEvent(`${node.constructor.name}.${prop}`, level)
+                    appendEvent(`setting ${node.constructor.name}.${prop}`, level)
                     fake = fn
                 },
                 // writeable: true,
